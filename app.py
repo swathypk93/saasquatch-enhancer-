@@ -87,4 +87,32 @@ if not st.session_state.history.empty:
         st.plotly_chart(fig_pie, use_container_width=True)
 
     with col_bar:
-        df['Company Short'] = df['Compan]()
+        df['Company Short'] = df['Company'].str.extract(r'(\w+)')
+        bar_data = df['Company Short'].value_counts().reset_index()
+        bar_data.columns = ['Company', 'Count']
+        fig_bar = px.bar(bar_data, x='Company', y='Count', title="Company Name Frequency")
+        st.plotly_chart(fig_bar, use_container_width=True)
+
+    with col_line:
+        trend = pd.DataFrame({
+            "Date": pd.date_range(end=pd.Timestamp.today(), periods=len(df)),
+            "Leads": list(range(1, len(df) + 1))
+        })
+        fig_line = px.line(trend, x='Date', y='Leads', title="Lead Growth Over Time")
+        st.plotly_chart(fig_line, use_container_width=True)
+
+    st.markdown("---")
+
+    # ----------- Scraping History Table -----------
+    st.markdown("### 🧾 Scraping History")
+    AgGrid(df.drop(columns=['Company Short'], errors='ignore'), theme="dark", fit_columns_on_grid_load=True)
+
+    # ----------- Download Button -----------
+    csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button("📥 Download All Leads", data=csv, file_name="leads.csv", mime="text/csv")
+
+else:
+    st.info("No leads yet. Use the form above to begin.")
+
+
+   
