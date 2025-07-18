@@ -1,4 +1,4 @@
-# saasquatch-enhancer
+# Saasquatch-enhancer
 
 Lead generation tool for the Caprae AI-Readiness Challenge
 
