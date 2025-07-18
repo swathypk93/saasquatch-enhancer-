@@ -29,7 +29,7 @@ st.markdown("Use filters to find and download leads by title, region, and indust
 # --------------------------
 # Filter Widgets
 # --------------------------
-job_filter = st.selectbox("🔧 Filter by Job Title:", options=["All"] + sorted(sample_data["Job Title"].unique())),region_filter = st.selectbox("🌎 Filter by Region:", options=["All"] + sorted(sample_data["Region"].unique())),industry_filter = st.selectbox("🏢 Filter by Industry:", options=["All"] + sorted(sample_data["Industry"].unique()))
+job_filter = st.selectbox("🔧 Filter by Job Title:", options=["All"] + sorted(sample_data["Job Title"].unique())), st.selectbox("🌎 Filter by Region:", options=["All"] + sorted(sample_data["Region"].unique())), st.selectbox("🏢 Filter by Industry:", options=["All"] + sorted(sample_data["Industry"].unique()))
 
 # --------------------------
 # Apply Filters
