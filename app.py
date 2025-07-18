@@ -22,14 +22,17 @@ def scrape_leads(query, count=5):
         match = re.search(r'https://www\.linkedin\.com/in/[^&]+', href)
         if match:
             name = link.get_text().strip()
-            leads.append({
-                "Company": name[:30] if name else "LinkedIn User",
-                "Website": match.group(0),
-                "Industry": "Unknown",
-                "Product/Service Category": "Unknown",
-                "Business Type (B2B, B2C)": "B2B",
-                "Employees": "N/A"
-            })
+           leads.append({
+                        "Company": name[:30] if name else "LinkedIn User",
+                        "Website": match.group(0),
+                        "Industry": "SaaS",  # 🆕 mock industry
+                        "Product/Service Category": "Software",
+                        "Business Type (B2B, B2C)": "B2B",
+                        "Employees": "50",
+                        "Title": "CEO",       # 🆕 mock job title
+                        "Region": "California" # 🆕 mock region
+})
+
         if len(leads) >= count:
             break
 
@@ -38,8 +41,10 @@ def scrape_leads(query, count=5):
 # ----------- Initialize Session State -----------
 if 'history' not in st.session_state:
     st.session_state.history = pd.DataFrame(columns=[
-        "Company", "Website", "Industry", "Product/Service Category", "Business Type (B2B, B2C)", "Employees"
+        "Company", "Website", "Industry", "Product/Service Category",
+        "Business Type (B2B, B2C)", "Employees", "Title", "Region"
     ])
+
 if 'total_leads' not in st.session_state:
     st.session_state.total_leads = 0
 
@@ -53,22 +58,7 @@ with st.form("scrape_form"):
     query = st.text_input("Enter search term")
     num_results = st.slider("Number of leads", 1, 20, 5)
     submitted = st.form_submit_button("Search")
-# Add filters
-st.markdown("### 🎯 Filter Results")
-title_filter = st.multiselect("Job Title", options=df['Title'].dropna().unique())
-region_filter = st.multiselect("Region", options=df['Region'].dropna().unique())
-industry_filter = st.multiselect("Industry", options=df['Industry'].dropna().unique())
 
-# Apply filters
-filtered_df = df.copy()
-if title_filter:
-    filtered_df = filtered_df[filtered_df['Title'].isin(title_filter)]
-if region_filter:
-    filtered_df = filtered_df[filtered_df['Region'].isin(region_filter)]
-if industry_filter:
-    filtered_df = filtered_df[filtered_df['Industry'].isin(industry_filter)]
-
-st.dataframe(filtered_df)
 
 # ----------- Scraping Execution -----------
 if submitted and query:
@@ -93,6 +83,24 @@ with col3:
 # ----------- Charts Section -----------
 if not st.session_state.history.empty:
     df = st.session_state.history
+    # --- FILTERS ---
+    st.markdown("### 🎯 Filter Leads")
+    titles = df['Title'].dropna().unique()
+    regions = df['Region'].dropna().unique()
+    industries = df['Industry'].dropna().unique()
+
+    selected_titles = st.multiselect("Filter by Job Title", titles)
+    selected_regions = st.multiselect("Filter by Region", regions)
+    selected_industries = st.multiselect("Filter by Industry", industries)
+
+    # Apply filters
+    filtered_df = df.copy()
+    if selected_titles:
+        filtered_df = filtered_df[filtered_df['Title'].isin(selected_titles)]
+    if selected_regions:
+        filtered_df = filtered_df[filtered_df['Region'].isin(selected_regions)]
+    if selected_industries:
+        filtered_df = filtered_df[filtered_df['Industry'].isin(selected_industries)]
 
     col_pie, col_bar, col_line = st.columns(3)
 
@@ -120,7 +128,7 @@ if not st.session_state.history.empty:
     st.markdown("---")
 
     # ----------- Scraping History Table -----------
-    st.markdown("### 🧾 Scraping History")
+    st.markdown("### 🧾 Scraping History")AgGrid(filtered_df.drop(columns=['Company Short'], errors='ignore'), ...)
     AgGrid(df.drop(columns=['Company Short'], errors='ignore'), theme="dark", fit_columns_on_grid_load=True)
 
     # ----------- Download Button -----------
