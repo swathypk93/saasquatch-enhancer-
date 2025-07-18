@@ -22,17 +22,16 @@ def scrape_leads(query, count=5):
         match = re.search(r'https://www\.linkedin\.com/in/[^&]+', href)
         if match:
             name = link.get_text().strip()
-               leads.append({
-                        "Company": name[:30] if name else "LinkedIn User",
-                        "Website": match.group(0),
-                        "Industry": "SaaS",  # 🆕 mock industry
-                        "Product/Service Category": "Software",
-                        "Business Type (B2B, B2C)": "B2B",
-                        "Employees": "50",
-                        "Title": "CEO",       # 🆕 mock job title
-                        "Region": "California" # 🆕 mock region
-})
-
+            leads.append({
+                "Company": name[:30] if name else "LinkedIn User",
+                "Website": match.group(0),
+                "Industry": "SaaS",
+                "Product/Service Category": "Software",
+                "Business Type (B2B, B2C)": "B2B",
+                "Employees": "50",
+                "Title": "CEO",
+                "Region": "California"
+            })
         if len(leads) >= count:
             break
 
@@ -44,7 +43,6 @@ if 'history' not in st.session_state:
         "Company", "Website", "Industry", "Product/Service Category",
         "Business Type (B2B, B2C)", "Employees", "Title", "Region"
     ])
-
 if 'total_leads' not in st.session_state:
     st.session_state.total_leads = 0
 
@@ -58,7 +56,6 @@ with st.form("scrape_form"):
     query = st.text_input("Enter search term")
     num_results = st.slider("Number of leads", 1, 20, 5)
     submitted = st.form_submit_button("Search")
-
 
 # ----------- Scraping Execution -----------
 if submitted and query:
@@ -80,9 +77,10 @@ with col3:
     st.button("Upgrade")
     st.caption("Active until 6/30/2025")
 
-# ----------- Charts Section -----------
+# ----------- Charts & Filters -----------
 if not st.session_state.history.empty:
     df = st.session_state.history
+
     # --- FILTERS ---
     st.markdown("### 🎯 Filter Leads")
     titles = df['Title'].dropna().unique()
@@ -93,7 +91,6 @@ if not st.session_state.history.empty:
     selected_regions = st.multiselect("Filter by Region", regions)
     selected_industries = st.multiselect("Filter by Industry", industries)
 
-    # Apply filters
     filtered_df = df.copy()
     if selected_titles:
         filtered_df = filtered_df[filtered_df['Title'].isin(selected_titles)]
@@ -102,37 +99,37 @@ if not st.session_state.history.empty:
     if selected_industries:
         filtered_df = filtered_df[filtered_df['Industry'].isin(selected_industries)]
 
+    # --- Charts ---
     col_pie, col_bar, col_line = st.columns(3)
 
     with col_pie:
-        pie_data = df['Business Type (B2B, B2C)'].value_counts().reset_index()
+        pie_data = filtered_df['Business Type (B2B, B2C)'].value_counts().reset_index()
         pie_data.columns = ['Type', 'Count']
         fig_pie = px.pie(pie_data, values='Count', names='Type', title="Business Type Distribution")
         st.plotly_chart(fig_pie, use_container_width=True)
 
     with col_bar:
-        df['Company Short'] = df['Company'].str.extract(r'(\w+)')
-        bar_data = df['Company Short'].value_counts().reset_index()
+        filtered_df['Company Short'] = filtered_df['Company'].str.extract(r'(\w+)')
+        bar_data = filtered_df['Company Short'].value_counts().reset_index()
         bar_data.columns = ['Company', 'Count']
         fig_bar = px.bar(bar_data, x='Company', y='Count', title="Company Name Frequency")
         st.plotly_chart(fig_bar, use_container_width=True)
 
     with col_line:
         trend = pd.DataFrame({
-            "Date": pd.date_range(end=pd.Timestamp.today(), periods=len(df)),
-            "Leads": list(range(1, len(df) + 1))
+            "Date": pd.date_range(end=pd.Timestamp.today(), periods=len(filtered_df)),
+            "Leads": list(range(1, len(filtered_df) + 1))
         })
         fig_line = px.line(trend, x='Date', y='Leads', title="Lead Growth Over Time")
         st.plotly_chart(fig_line, use_container_width=True)
 
     st.markdown("---")
 
-    # ----------- Scraping History Table -----------
-    st.markdown("### 🧾 Scraping History")AgGrid(filtered_df.drop(columns=['Company Short'], errors='ignore'), ...)
-    AgGrid(df.drop(columns=['Company Short'], errors='ignore'), theme="dark", fit_columns_on_grid_load=True)
+    # ----------- Table + Download -----------
+    st.markdown("### 🧾 Scraping History")
+    AgGrid(filtered_df.drop(columns=['Company Short'], errors='ignore'), theme="dark", fit_columns_on_grid_load=True)
 
-    # ----------- Download Button -----------
-    csv = df.to_csv(index=False).encode('utf-8')
+    csv = filtered_df.to_csv(index=False).encode('utf-8')
     st.download_button("📥 Download All Leads", data=csv, file_name="leads.csv", mime="text/csv")
 
 else:
