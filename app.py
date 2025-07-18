@@ -22,7 +22,7 @@ def scrape_leads(query, count=5):
         match = re.search(r'https://www\.linkedin\.com/in/[^&]+', href)
         if match:
             name = link.get_text().strip()
-           leads.append({
+               leads.append({
                         "Company": name[:30] if name else "LinkedIn User",
                         "Website": match.group(0),
                         "Industry": "SaaS",  # 🆕 mock industry
