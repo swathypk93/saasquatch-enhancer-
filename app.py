@@ -53,6 +53,22 @@ with st.form("scrape_form"):
     query = st.text_input("Enter search term")
     num_results = st.slider("Number of leads", 1, 20, 5)
     submitted = st.form_submit_button("Search")
+# Add filters
+st.markdown("### 🎯 Filter Results")
+title_filter = st.multiselect("Job Title", options=df['Title'].dropna().unique())
+region_filter = st.multiselect("Region", options=df['Region'].dropna().unique())
+industry_filter = st.multiselect("Industry", options=df['Industry'].dropna().unique())
+
+# Apply filters
+filtered_df = df.copy()
+if title_filter:
+    filtered_df = filtered_df[filtered_df['Title'].isin(title_filter)]
+if region_filter:
+    filtered_df = filtered_df[filtered_df['Region'].isin(region_filter)]
+if industry_filter:
+    filtered_df = filtered_df[filtered_df['Industry'].isin(industry_filter)]
+
+st.dataframe(filtered_df)
 
 # ----------- Scraping Execution -----------
 if submitted and query:
