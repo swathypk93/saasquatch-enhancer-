@@ -35,7 +35,6 @@ This tool simulates a lightweight lead generation process by scraping Google sea
 
 - Add filtering options for job title, region, or industry
 - Integrate real-time API enrichment (e.g., Hunter.io, Clearbit)
-- Build a lightweight UI using Streamlit or Gradio
 - Add CRM integration (export directly to Salesforce, HubSpot, Zoho)
 - Add lead deduplication and validation mechanisms
 
