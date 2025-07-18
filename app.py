@@ -5,8 +5,8 @@ import pandas as pd
 def scrape_leads(keyword):
     # Simulated dummy data
     data = {
-        "Name": ["John Doe", "Jane Smith", "Alex Johnson"],
-        "Email": ["john@example.com", "jane@example.com", "alex@example.com"],
+        "Name": ["James Doe", "Jane Smith", "Alex Johnson"],
+        "Email": ["james@example.com", "jane@example.com", "alex@example.com"],
         "LinkedIn URL": [
             f"https://linkedin.com/in/{keyword.lower().replace(' ', '')}1",
             f"https://linkedin.com/in/{keyword.lower().replace(' ', '')}2",
