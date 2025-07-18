@@ -40,11 +40,17 @@ This tool simulates a lightweight lead generation process by scraping Google sea
 
 ---
 
+
+## 📺 Live Demo (Streamlit UI)
+
+👉 [Click here to try the app](https://swathypk93-saasquatch-enhancer-app.streamlit.app/)
+
+Use the dropdowns to filter leads by job title, region, or industry. Click "Download" to export.
+
 ## 👤 Author
 
 Swathy
 
 - Add CRM integration (export directly to tools like Salesforce, HubSpot, Zoho)
 
-Added Future Improvements section to README
 
