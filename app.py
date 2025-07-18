@@ -1,46 +1,65 @@
 import streamlit as st
 import pandas as pd
 
-# Dummy scraper function
-def scrape_leads(keyword):
-    # Simulated dummy data
-    data = {
-        "Name": ["James Doe", "Jane Smith", "Alex Johnson"],
-        "Email": ["james@example.com", "jane@example.com", "alex@example.com"],
-        "LinkedIn URL": [
-            f"https://linkedin.com/in/{keyword.lower().replace(' ', '')}1",
-            f"https://linkedin.com/in/{keyword.lower().replace(' ', '')}2",
-            f"https://linkedin.com/in/{keyword.lower().replace(' ', '')}3"
-        ]
-    }
-    return pd.DataFrame(data)
+# --------------------------
+# Sample lead data (dummy)
+# --------------------------
+sample_data = pd.DataFrame({
+    "Name": ["John Doe", "Jane Smith", "Alex Johnson", "Priya Mehta", "Suresh Reddy"],
+    "Email": ["john@ex.com", "jane@ex.com", "alex@ex.com", "priya@ex.com", "suresh@ex.com"],
+    "Job Title": ["CTO", "Marketing Manager", "CEO", "CTO", "Data Scientist"],
+    "Region": ["India", "USA", "India", "UK", "India"],
+    "Industry": ["Tech", "Retail", "Finance", "Tech", "AI"],
+    "LinkedIn URL": [
+        "https://linkedin.com/in/john",
+        "https://linkedin.com/in/jane",
+        "https://linkedin.com/in/alex",
+        "https://linkedin.com/in/priya",
+        "https://linkedin.com/in/suresh"
+    ]
+})
 
-# Streamlit UI
-st.set_page_config(page_title="SaaSquatch Lead Generator", page_icon="📊")
-
+# --------------------------
+# Streamlit App UI
+# --------------------------
+st.set_page_config(page_title="Lead Generator with Filters", page_icon="🦄")
 st.title("🦄 SaaSquatch Lead Generator")
-st.markdown("Enter a search keyword (e.g., 'CTOs in India') to simulate lead scraping.")
+st.markdown("Use filters to find and download leads by title, region, and industry.")
 
-# Input box
-keyword = st.text_input("🔍 Enter Keyword:", "")
+# --------------------------
+# Filter Widgets
+# --------------------------
+job_filter = st.selectbox("🔧 Filter by Job Title:", options=["All"] + sorted(sample_data["Job Title"].unique()))
+region_filter = st.selectbox("🌎 Filter by Region:", options=["All"] + sorted(sample_data["Region"].unique()))
+industry_filter = st.selectbox("🏢 Filter by Industry:", options=["All"] + sorted(sample_data["Industry"].unique()))
 
-# Trigger scraping
-if st.button("Generate Leads"):
-    if keyword:
-        leads_df = scrape_leads(keyword)
-        st.success("Leads generated successfully!")
-        st.dataframe(leads_df)
+# --------------------------
+# Apply Filters
+# --------------------------
+filtered_data = sample_data.copy()
+if job_filter != "All":
+    filtered_data = filtered_data[filtered_data["Job Title"] == job_filter]
+if region_filter != "All":
+    filtered_data = filtered_data[filtered_data["Region"] == region_filter]
+if industry_filter != "All":
+    filtered_data = filtered_data[filtered_data["Industry"] == industry_filter]
 
-        # CSV download
-        csv = leads_df.to_csv(index=False).encode('utf-8')
-        st.download_button(
-            label="📥 Download CSV",
-            data=csv,
-            file_name="leads.csv",
-            mime='text/csv',
-        )
-       ## Added app.py for Streamlit UI
+# --------------------------
+# Show + Download Results
+# --------------------------
+if not filtered_data.empty:
+    st.success(f"{len(filtered_data)} leads found.")
+    st.dataframe(filtered_data)
 
-    else:
-        st.warning("Please enter a keyword to begin.")
+    # Download CSV
+    csv = filtered_data.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📥 Download Filtered Leads",
+        data=csv,
+        file_name="filtered_leads.csv",
+        mime='text/csv',
+    )
+else:
+    st.warning("No leads match the selected filters.")
+
 
