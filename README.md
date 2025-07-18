@@ -11,6 +11,7 @@ This tool simulates a lightweight lead generation process by scraping Google sea
 -  Scrapes Google search results for targeted LinkedIn profiles
 -  Extracts names and LinkedIn URLs from the search data
 -  Enriches results with dummy (realistic) email addresses
+-  Interactive Streamlit UI (`app.py`) with keyword input + CSV export
 -  Outputs a clean, structured `leads.csv` file
 -  Built for quick prototyping and demonstration
 -  Output is CRM-ready for use with Salesforce, HubSpot, Zoho, etc.
@@ -25,6 +26,8 @@ This tool simulates a lightweight lead generation process by scraping Google sea
 | `leads.csv`                  | Generated leads output (Name, Email, LinkedIn URL)          |
 | `caprae_project_report.ipynb`| Report notebook (PDF )    |
 | `README.md`                  | Project overview and structure                              |
+| `app.py`                     | Streamlit UI – Enter keyword, view leads, export CSV     |
+
 
 ---
 
