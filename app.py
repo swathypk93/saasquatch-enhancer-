@@ -1,50 +1,44 @@
+# app.py
+
 import streamlit as st
 import pandas as pd
+import time
 
-# Load data
-df = pd.read_csv("scraping_history.csv")
+# Fake data for demo purposes (replace with your scraper results)
+def generate_dummy_leads(query):
+    time.sleep(2)  # Simulate scraping delay
+    return pd.DataFrame({
+        "Name": ["Alice Smith", "Bob Johnson", "Cathy Lee"],
+        "Company": ["TechCorp", "BizDev Inc", "StartSmart"],
+        "Role": ["CTO", "VP Sales", "Head of Product"],
+        "Email": ["alice@techcorp.com", "bob@bizdev.com", "cathy@startsmart.io"],
+        "LinkedIn": [
+            "https://linkedin.com/in/alice",
+            "https://linkedin.com/in/bob",
+            "https://linkedin.com/in/cathy"
+        ]
+    })
 
-# Title
-st.markdown("<h1 style='color:#ffffff;'>🧠 Scraping History Dashboard</h1>", unsafe_allow_html=True)
-st.markdown("Use search or filters to explore scraped company data.", unsafe_allow_html=True)
+# Streamlit UI
+st.set_page_config(page_title="SaaSquatch Enhancer", layout="wide")
+st.title("🔍 SaaSquatch Lead Generator")
 
-# Search bar
-search_term = st.text_input("🔎 Search history...", "")
+query = st.text_input("Enter keyword or domain to find leads:")
 
-# Apply search
-if search_term:
-    df = df[df.apply(lambda row: row.astype(str).str.contains(search_term, case=False).any(), axis=1)]
+if st.button("Search"):
+    if not query:
+        st.warning("Please enter a keyword or domain to start.")
+    else:
+        with st.spinner("Scraping leads... Please wait."):
+            leads_df = generate_dummy_leads(query)
+        st.success(f"Found {len(leads_df)} leads!")
+        st.dataframe(leads_df, use_container_width=True)
 
-# Table filters
-col1, col2 = st.columns(2)
-with col1:
-    selected_industry = st.selectbox("🏢 Filter by Industry", ["All"] + sorted(df["Industry"].dropna().unique().tolist()))
-with col2:
-    selected_type = st.selectbox("📊 Filter by Business Type", ["All"] + sorted(df["Business Type"].dropna().unique().tolist()))
-
-if selected_industry != "All":
-    df = df[df["Industry"] == selected_industry]
-
-if selected_type != "All":
-    df = df[df["Business Type"] == selected_type]
-
-# Style table
-def style_row(val):
-    if len(str(val)) > 60:
-        return val[:60] + "..."
-    return val
-
-styled_df = df.copy()
-styled_df["Product/Service Category"] = styled_df["Product/Service Category"].apply(style_row)
-
-# Show results
-st.success(f"{len(styled_df)} results found.")
-st.dataframe(styled_df, use_container_width=True)
-
-# Download button
-st.download_button(
-    label="⬇️ Download Filtered Results",
-    data=styled_df.to_csv(index=False).encode("utf-8"),
-    file_name="filtered_scraping_history.csv",
-    mime="text/csv"
-)
+        # Download option
+        csv = leads_df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Download Results as CSV",
+            data=csv,
+            file_name='leads_output.csv',
+            mime='text/csv'
+        )
