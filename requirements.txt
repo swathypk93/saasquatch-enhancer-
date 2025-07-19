@@ -2,5 +2,5 @@ streamlit
 pandas
 plotly
 streamlit-aggrid
-import BeautifulSoup
+BeautifulSoup
 
