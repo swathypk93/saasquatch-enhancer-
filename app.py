@@ -134,6 +134,3 @@ if not st.session_state.history.empty:
 
 else:
     st.info("No leads yet. Use the form above to begin.")
-
-
-   
